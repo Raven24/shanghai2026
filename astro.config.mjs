@@ -3,7 +3,7 @@ import remarkHashtags from './src/plugins/remark-hashtags.mjs';
 
 export default defineConfig({
   // Site URL for RSS and canonical links
-  site: 'https://example.com/',
+  site: 'https://shanghai2026.flstd.xyz/',
   
   // Markdown configuration
   markdown: {
