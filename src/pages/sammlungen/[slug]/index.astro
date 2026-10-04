@@ -1,0 +1,165 @@
+---
+import { getCollection } from 'astro:content';
+import { Picture } from 'astro:assets';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import CollectionGrid from '../../../components/CollectionGrid.astro';
+
+export async function getStaticPaths() {
+  const sammlungen = await getCollection('sammlungen');
+  const posts = await getCollection('posts');
+
+  return sammlungen.map((sammlung) => {
+    const collectionPosts = posts
+      .filter((post) => post.data.sammlung === sammlung.id)
+      .sort((a, b) => b.data.datum.getTime() - a.data.datum.getTime());
+
+    return {
+      params: { slug: sammlung.id },
+      props: { sammlung, posts: collectionPosts },
+    };
+  });
+}
+
+interface Props {
+  sammlung: any;
+  posts: any[];
+}
+
+const { sammlung, posts } = Astro.props;
+---
+
+<BaseLayout title={`${sammlung.data.titel} | Fotoalbum`} description={sammlung.data.beschreibung}>
+  <article class="collection-detail">
+    <div class="container">
+      <!-- Back link -->
+      <nav class="collection-nav" aria-label="Navigation">
+        <a href="/" class="back-link">← Home</a>
+      </nav>
+
+      <!-- Collection header -->
+      <header class="collection-header">
+        <div class="collection-cover">
+          <Picture
+            src={sammlung.data.titelbild}
+            alt={sammlung.data.titelbildAlt}
+            formats={['avif', 'webp']}
+            widths={[600, 900, 1200]}
+            sizes="(min-width: 900px) 600px, 100vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+        <div class="collection-info">
+          <h1>{sammlung.data.titel}</h1>
+          <p class="collection-description">{sammlung.data.beschreibung}</p>
+          <p class="collection-count">{posts.length} Entries</p>
+        </div>
+      </header>
+
+      <!-- Posts grid -->
+      {posts.length > 0 ? (
+        <section class="collection-posts">
+          <h2 class="sr-only">Beiträge in dieser Sammlung</h2>
+          <CollectionGrid posts={posts} />
+        </section>
+      ) : (
+        <p class="no-posts">Keine Beiträge in dieser Sammlung.</p>
+      )}
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .collection-detail {
+    padding: var(--spacing-2xl) 0;
+  }
+
+  .collection-nav {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color var(--transition-duration) var(--transition-timing);
+  }
+
+  .back-link:hover {
+    color: var(--color-accent-hover);
+  }
+
+  .back-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  .collection-header {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .collection-cover {
+    width: 100%;
+    max-height: 400px;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .collection-cover :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .collection-info {
+    padding: var(--spacing-lg);
+    background-color: var(--color-subtle-bg);
+    border-radius: 8px;
+  }
+
+  .collection-info h1 {
+    margin-bottom: var(--spacing-md);
+    font-size: 2rem;
+  }
+
+  .collection-description {
+    color: var(--color-subtle-text);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.8;
+  }
+
+  .collection-count {
+    color: var(--color-text);
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .collection-posts {
+    margin-top: var(--spacing-2xl);
+  }
+
+  .no-posts {
+    text-align: center;
+    color: var(--color-subtle-text);
+    padding: var(--spacing-2xl);
+  }
+
+  @media (max-width: 640px) {
+    .collection-detail {
+      padding: var(--spacing-lg) 0;
+    }
+
+    .collection-info {
+      padding: var(--spacing-md);
+    }
+
+    .collection-info h1 {
+      font-size: 1.5rem;
+    }
+  }
+</style>

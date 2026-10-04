@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "titel": {
+      "type": "string",
+      "minLength": 1
+    },
+    "beschreibung": {
+      "type": "string",
+      "minLength": 1
+    },
+    "titelbild": {
+      "type": "string"
+    },
+    "titelbildAlt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sortierung": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "datum": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "titel",
+    "beschreibung",
+    "titelbild",
+    "titelbildAlt"
+  ]
+}

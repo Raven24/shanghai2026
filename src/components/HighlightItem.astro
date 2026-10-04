@@ -1,0 +1,89 @@
+---
+import { Picture } from 'astro:assets';
+
+interface Props {
+  sammlung: any;
+}
+
+const { sammlung } = Astro.props;
+---
+
+<a href={`/sammlungen/${sammlung.id}/`} class="highlight-item">
+  <div class="highlight-ring">
+    <Picture
+      src={sammlung.data.titelbild}
+      alt={sammlung.data.titelbildAlt}
+      formats={['avif', 'webp']}
+      widths={[128, 256]}
+      sizes="128px"
+      loading="lazy"
+    />
+  </div>
+  <p class="highlight-label">{sammlung.data.titel}</p>
+</a>
+
+<style>
+  .highlight-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    scroll-snap-align: start;
+    transition: transform var(--transition-duration) var(--transition-timing);
+  }
+  
+  .highlight-item:hover {
+    transform: scale(1.05);
+  }
+  
+  .highlight-item:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: 50%;
+  }
+  
+  .highlight-ring {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--color-border);
+    flex-shrink: 0;
+    transition: border-color var(--transition-duration) var(--transition-timing);
+  }
+  
+  .highlight-item:hover .highlight-ring {
+    border-color: var(--color-accent);
+  }
+  
+  .highlight-ring :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .highlight-label {
+    font-size: 0.85rem;
+    text-align: center;
+    max-width: 120px;
+    white-space: normal;
+    word-break: break-word;
+    margin: 0;
+    color: var(--color-subtle-text);
+  }
+  
+  @media (max-width: 640px) {
+    .highlight-ring {
+      width: 80px;
+      height: 80px;
+    }
+    
+    .highlight-label {
+      font-size: 0.8rem;
+    }
+  }
+</style>

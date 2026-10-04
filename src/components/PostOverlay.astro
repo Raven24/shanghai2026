@@ -1,0 +1,194 @@
+---
+import Icon from './Icon.astro';
+import Carousel from './Carousel.astro';
+
+interface ImageItem {
+  datei: ImageMetadata;
+  alt: string;
+}
+
+interface Props {
+  postId: string;
+  bilder: ImageItem[];
+  content?: string;
+}
+
+const { postId, bilder, content = '' } = Astro.props;
+---
+
+<dialog id={`overlay-${postId}`} class="post-overlay">
+  <div class="overlay-content">
+    <button class="overlay-close" aria-label="Dialog schließen">
+      <Icon name="close" size={24} />
+    </button>
+    
+    <div class="overlay-carousel">
+      <Carousel bilder={bilder} showDots={true} />
+    </div>
+    
+    {content && (
+      <div class="overlay-caption">
+        <div set:html={content} />
+      </div>
+    )}
+  </div>
+</dialog>
+
+<style>
+  .post-overlay {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    padding: 0;
+    border: none;
+    background: var(--color-bg);
+    color: var(--color-text);
+    overflow: auto;
+    z-index: 1000;
+  }
+  
+  /* Mobile: fullscreen */
+  @media (max-width: 768px) {
+    .post-overlay {
+      width: 100vw;
+      height: 100svh;
+      max-width: 100vw;
+      max-height: 100svh;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+  }
+  
+  /* Desktop: centered panel */
+  @media (min-width: 769px) {
+    .post-overlay {
+      width: 90vw;
+      height: 90svh;
+      max-width: 800px;
+      max-height: 800px;
+    }
+  }
+  
+  .post-overlay::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    @media (prefers-reduced-motion: reduce) {
+      backdrop-filter: none;
+    }
+  }
+  
+  .overlay-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+  }
+  
+  .overlay-close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing);
+  }
+  
+  .overlay-close:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  
+  .overlay-close:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+  
+  .overlay-carousel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+  }
+  
+  .overlay-carousel :global(.carousel-container) {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+  }
+  
+  .overlay-carousel :global(.carousel-item),
+  .overlay-carousel :global(.carousel-single) {
+    max-height: 70vh;
+  }
+  
+  .overlay-caption {
+    margin-top: var(--spacing-lg);
+    padding: 0 var(--spacing-md);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-height: 150px;
+    overflow-y: auto;
+    color: var(--color-subtle-text);
+  }
+  
+  .overlay-caption :global(p) {
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .overlay-caption :global(a) {
+    color: var(--color-accent);
+  }
+
+  .overlay-caption :global(.hashtag) {
+    color: var(--color-subtle-text);
+    cursor: default;
+  }
+</style>
+
+<script>
+  // Dialog management
+  const dialogId = document.currentScript?.previousElementSibling?.id;
+  if (dialogId) {
+    const dialog = document.getElementById(dialogId) as HTMLDialogElement | null;
+    const closeButton = dialog?.querySelector('.overlay-close');
+    
+    if (dialog && closeButton) {
+      closeButton.addEventListener('click', () => {
+        dialog.close();
+      });
+      
+      dialog.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          dialog.close();
+        }
+      });
+      
+      dialog.addEventListener('click', (e: MouseEvent) => {
+        if (e.target === dialog) {
+          dialog.close();
+        }
+      });
+      
+      // Scroll lock when dialog is open
+      const originalBodyOverflow = document.body.style.overflow;
+      dialog.addEventListener('open', () => {
+        document.body.style.overflow = 'hidden';
+      });
+      dialog.addEventListener('close', () => {
+        document.body.style.overflow = originalBodyOverflow;
+      });
+    }
+  }
+</script>

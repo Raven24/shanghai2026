@@ -1,0 +1,51 @@
+---
+import GridTile from './GridTile.astro';
+
+interface Post {
+  id: string;
+  data: {
+    bilder: Array<{ datei: ImageMetadata; alt: string }>;
+    datum: Date;
+  };
+}
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+<div class="collection-grid">
+  {posts.map((post) => (
+    <GridTile
+      href={`/posts/${post.id}/`}
+      bild={post.data.bilder[0].datei}
+      alt={post.data.bilder[0].alt}
+      mehreBilder={post.data.bilder.length > 1}
+    />
+  ))}
+</div>
+
+<style>
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+  
+  @media (max-width: 900px) {
+    .collection-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .collection-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+</style>

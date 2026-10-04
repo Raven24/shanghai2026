@@ -1,0 +1,229 @@
+---
+import { Picture } from 'astro:assets';
+
+interface ImageItem {
+  datei: ImageMetadata;
+  alt: string;
+}
+
+interface PostData {
+  datum: Date;
+  sammlung: string;
+  bilder: ImageItem[];
+}
+
+interface Props {
+  post: {
+    id: string;
+    data: PostData;
+    body?: string;
+  };
+  sammlung?: { data: { titel: string } } | null;
+}
+
+const { post, sammlung } = Astro.props;
+
+const formattedDate = post.data.datum.toLocaleDateString('de-DE', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+
+// Helper function to escape HTML special characters
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Helper function to process hashtags in text
+function processHashtags(text: string): string {
+  const HASHTAG_REGEX = /(^|\s)(#[\p{L}\p{N}_]+)/gu;
+  return text.replace(HASHTAG_REGEX, '$1<span class="hashtag">$2</span>');
+}
+
+const rawPreview = post.body ? post.body.substring(0, 200) : 'Neuer Beitrag';
+const escapedPreview = escapeHtml(rawPreview);
+const previewHtml = processHashtags(escapedPreview);
+---
+
+<article class="post-card">
+  <!-- Card header -->
+  <header class="post-card-header">
+    <div class="post-card-meta">
+      <time datetime={post.data.datum.toISOString()} class="post-card-date">
+        {formattedDate}
+      </time>
+      {sammlung && (
+        <a href={`/sammlungen/${post.data.sammlung}/`} class="post-card-collection">
+          {sammlung.data.titel}
+        </a>
+      )}
+    </div>
+  </header>
+
+  <!-- Image grid -->
+  <div class="post-card-images">
+    {post.data.bilder.map((img, idx) => (
+      <a href={`/posts/${post.id}/`} class="post-card-image-link" aria-label={`Zum Beitrag ${post.id}`}>
+        <Picture
+          src={img.datei}
+          alt={img.alt}
+          formats={['avif', 'webp']}
+          widths={[480, 768, 1080]}
+          sizes="(min-width: 768px) 300px, (min-width: 640px) 250px, 100vw"
+          loading={idx === 0 ? 'eager' : 'lazy'}
+          fetchpriority={idx === 0 ? 'high' : 'auto'}
+        />
+      </a>
+    ))}
+  </div>
+
+  <!-- Content -->
+  <div class="post-card-content">
+    <div class="post-card-text">
+      <p set:html={`${previewHtml}...`} />
+    </div>
+
+    <!-- Read more link -->
+    <a href={`/posts/${post.id}/`} class="post-card-link">
+      view post →
+    </a>
+  </div>
+</article>
+
+<style>
+  .post-card {
+    margin-bottom: var(--spacing-2xl);
+    padding: var(--spacing-lg) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post-card:last-child {
+    border-bottom: none;
+  }
+
+  .post-card-header {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .post-card-meta {
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: center;
+    font-size: 0.95rem;
+  }
+
+  .post-card-date {
+    color: var(--color-subtle-text);
+    font-weight: 500;
+  }
+
+  .post-card-collection {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color var(--transition-duration) var(--transition-timing);
+  }
+
+  .post-card-collection:hover {
+    text-decoration: underline;
+  }
+
+  .post-card-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .post-card-image-link {
+    display: block;
+    overflow: hidden;
+    border-radius: 8px;
+    aspect-ratio: 4 / 5;
+    text-decoration: none;
+    transition: transform var(--transition-duration) var(--transition-timing),
+                box-shadow var(--transition-duration) var(--transition-timing);
+  }
+
+  .post-card-image-link:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .post-card-image-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  .post-card-image-link :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .post-card-content {
+    max-width: 600px;
+  }
+
+  .post-card-text {
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.8;
+  }
+
+  .post-card-text :global(p) {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text);
+  }
+
+  .post-card-text :global(a) {
+    color: var(--color-accent);
+  }
+
+  .post-card-text :global(.hashtag) {
+    color: var(--color-subtle-text);
+    cursor: default;
+  }
+
+  .post-card-text :global(strong),
+  .post-card-text :global(em) {
+    font-weight: 600;
+  }
+
+  .post-card-link {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-duration) var(--transition-timing);
+  }
+
+  .post-card-link:hover {
+    color: var(--color-accent-hover);
+  }
+
+  .post-card-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  @media (max-width: 640px) {
+    .post-card {
+      margin-bottom: var(--spacing-lg);
+      padding: var(--spacing-md) 0;
+    }
+
+    .post-card-meta {
+      font-size: 0.9rem;
+      gap: var(--spacing-md);
+    }
+
+    .post-card-images {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--spacing-sm);
+    }
+  }
+</style>

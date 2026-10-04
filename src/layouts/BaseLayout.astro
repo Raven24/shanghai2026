@@ -1,0 +1,166 @@
+---
+import '../styles/global.css';
+import ThemeToggle from '../components/ThemeToggle.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Shanghai 2026', description = 'a digital photo album' } = Astro.props;
+
+const themeScript = `
+(function () {
+  const STORAGE_KEY = 'theme-preference';
+  const THEME_ATTR = 'data-theme';
+  const THEMES = ['light', 'dark', 'system'];
+  
+  function getTheme() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored && THEMES.includes(stored)) return stored;
+    return 'system';
+  }
+  
+  function getEffectiveTheme(preference) {
+    if (preference === 'system') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return preference;
+  }
+  
+  function applyTheme(preference) {
+    const effective = getEffectiveTheme(preference);
+    document.documentElement.setAttribute(THEME_ATTR, effective);
+    localStorage.setItem(STORAGE_KEY, preference);
+  }
+  
+  const initialTheme = getTheme();
+  applyTheme(initialTheme);
+  
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    const current = localStorage.getItem(STORAGE_KEY) || 'system';
+    if (current === 'system') {
+      applyTheme('system');
+    }
+  });
+  
+  window.themePreference = {
+    get: getTheme,
+    set: applyTheme,
+    cycle: () => {
+      const current = getTheme();
+      const next = current === 'light' ? 'dark' : current === 'dark' ? 'system' : 'light';
+      applyTheme(next);
+      return next;
+    },
+  };
+})();
+`;
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Theme script (inline to prevent FOUC) -->
+    <script set:html={themeScript} />
+    
+    <!-- Preload system fonts (optional, for performance) -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+  </head>
+  <body>
+    <!-- Skip to main content link -->
+    <a href="#main" class="skip-to-main">Zum Hauptinhalt springen</a>
+    
+    <!-- Header with theme toggle -->
+    <header class="site-header">
+      <div class="container">
+        <div class="header-content">
+          <nav class="header-nav" aria-label="Main navigation">
+            <a href="/" class="site-logo">Home</a>
+          </nav>
+          <ThemeToggle />
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main content -->
+    <main id="main" role="main">
+      <slot />
+    </main>
+    
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container">
+        <p>&copy; 2026</p>
+        <p><a href="/rss.xml">RSS</a></p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+  
+  .site-header {
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    transition: border-color var(--transition-duration) var(--transition-timing),
+                background-color var(--transition-duration) var(--transition-timing);
+  }
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) 0;
+    min-height: 64px;
+  }
+  
+  .header-nav {
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: center;
+  }
+  
+  .site-logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+  
+  main {
+    min-height: calc(100vh - 200px);
+  }
+  
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    padding: var(--spacing-2xl) 0;
+    margin-top: var(--spacing-2xl);
+    background-color: var(--color-subtle-bg);
+    transition: border-color var(--transition-duration) var(--transition-timing),
+                background-color var(--transition-duration) var(--transition-timing);
+  }
+  
+  .site-footer p {
+    text-align: center;
+    color: var(--color-subtle-text);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .site-footer a {
+    color: var(--color-accent);
+  }
+</style>

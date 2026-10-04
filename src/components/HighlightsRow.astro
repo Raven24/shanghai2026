@@ -1,0 +1,63 @@
+---
+import HighlightItem from './HighlightItem.astro';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  maxItems?: number;
+}
+
+const { maxItems = 7 } = Astro.props;
+
+const sammlungen = await getCollection('sammlungen');
+const sortedSammlungen = sammlungen.sort(
+  (a, b) => (a.data.sortierung ?? 999) - (b.data.sortierung ?? 999),
+);
+const displayedSammlungen = sortedSammlungen.slice(0, maxItems);
+---
+
+{displayedSammlungen.length > 0 && (
+  <section class="highlights-row">
+    <div class="container">
+      <h2 class="highlights-title">Collections</h2>
+      <div class="highlights-scroll">
+        {displayedSammlungen.map((sammlung) => (
+          <HighlightItem
+            sammlung={sammlung}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .highlights-row {
+    padding: var(--spacing-2xl) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .highlights-title {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .highlights-scroll {
+    display: flex;
+    gap: var(--spacing-lg);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 12px;
+    margin-bottom: -12px;
+  }
+  
+  @media (max-width: 640px) {
+    .highlights-row {
+      padding: var(--spacing-lg) 0;
+    }
+    
+    .highlights-title {
+      font-size: 1.1rem;
+      margin-bottom: var(--spacing-md);
+    }
+  }
+</style>

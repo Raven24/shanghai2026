@@ -1,0 +1,81 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProfileHeader from '../components/ProfileHeader.astro';
+import HighlightsRow from '../components/HighlightsRow.astro';
+import PostCard from '../components/PostCard.astro';
+import Pagination from '../components/Pagination.astro';
+
+// Get all posts, sorted by date (newest first)
+const allPosts = await getCollection('posts');
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.datum.getTime() - a.data.datum.getTime(),
+);
+
+// Pagination
+const pageSize = 12;
+const totalPages = Math.ceil(sortedPosts.length / pageSize);
+const currentPage = 1;
+const paginatedPosts = sortedPosts.slice(0, pageSize);
+
+// Get sammlungen for lookup
+const sammlungen = await getCollection('sammlungen');
+const sammlungenMap = new Map(sammlungen.map((s) => [s.id, s]));
+---
+
+<BaseLayout title="Album - Home">
+  <!-- Profile Header -->
+  <ProfileHeader name="Shanghai 2026" bio="digital album of my recent study trip to Shanghai" />
+
+  <!-- Highlights Row -->
+  <HighlightsRow />
+
+  <!-- Feed -->
+  <section class="feed-section">
+    <div class="container">
+      <h2 class="feed-title">Posts</h2>
+      <div class="feed">
+        {paginatedPosts.map((post) => (
+          <PostCard
+            post={post}
+            sammlung={sammlungenMap.get(post.data.sammlung)}
+          />
+        ))}
+      </div>
+
+      <!-- Pagination -->
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          lastPage={totalPages}
+        />
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .feed-section {
+    padding: var(--spacing-2xl) 0;
+  }
+
+  .feed-title {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .feed {
+    max-width: 700px;
+  }
+
+  @media (max-width: 640px) {
+    .feed-section {
+      padding: var(--spacing-lg) 0;
+    }
+
+    .feed-title {
+      font-size: 1.25rem;
+      margin-bottom: var(--spacing-lg);
+    }
+  }
+</style>

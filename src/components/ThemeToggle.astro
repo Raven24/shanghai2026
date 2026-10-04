@@ -1,0 +1,91 @@
+---
+import Icon from './Icon.astro';
+---
+
+<div class="theme-toggle-wrapper">
+  <button 
+    id="theme-toggle" 
+    class="theme-toggle"
+    aria-label="Toggle theme (Light, Dark, System)"
+    title="Toggle theme"
+  >
+    <span class="theme-icon sun-icon">
+      <Icon name="sun" size={20} />
+    </span>
+    <span class="theme-icon moon-icon" style="display: none;">
+      <Icon name="moon" size={20} />
+    </span>
+  </button>
+</div>
+
+<style>
+  .theme-toggle-wrapper {
+    display: flex;
+    align-items: center;
+  }
+  
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 8px;
+    background-color: var(--color-subtle-bg);
+    color: var(--color-text);
+    transition: background-color var(--transition-duration) var(--transition-timing);
+  }
+  
+  .theme-toggle:hover {
+    background-color: var(--color-border);
+  }
+  
+  .theme-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+
+<script>
+  declare global {
+    interface Window {
+      themePreference?: {
+        get: () => string;
+        set: (preference: string) => void;
+        cycle: () => string;
+      };
+    }
+  }
+
+  const button = document.getElementById('theme-toggle');
+  const sunIcon = document.querySelector('.sun-icon') as HTMLElement | null;
+  const moonIcon = document.querySelector('.moon-icon') as HTMLElement | null;
+  
+  function updateIcon() {
+    const theme = window.themePreference?.get?.();
+    const effective = theme === 'system'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      : theme;
+    
+    if (effective === 'dark') {
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'flex';
+    } else {
+      if (sunIcon) sunIcon.style.display = 'flex';
+      if (moonIcon) moonIcon.style.display = 'none';
+    }
+  }
+  
+  if (button) {
+    button.addEventListener('click', () => {
+      window.themePreference?.cycle?.();
+      updateIcon();
+    });
+    
+    updateIcon();
+    
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateIcon);
+  }
+</script>

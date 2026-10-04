@@ -1,0 +1,25 @@
+localhost {
+  root * /srv
+  file_server
+  
+  # Cache für hashed Assets
+  @assets path /_astro/*
+  header @assets Cache-Control "public, immutable, max-age=31536000"
+  
+  # Cache für RSS-Feed
+  @rss path /rss.xml
+  header @rss Cache-Control "public, max-age=3600"
+  
+  # HTML mit Revalidierung
+  header Cache-Control "public, max-age=300"
+  
+  # Security Headers
+  header X-Frame-Options SAMEORIGIN
+  header X-Content-Type-Options nosniff
+  
+  # Gzip-Kompression
+  encode gzip
+  
+  # SPA-Fallback für Router
+  try_files {path} {path}/ /index.html
+}

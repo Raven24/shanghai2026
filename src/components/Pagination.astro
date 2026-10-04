@@ -1,0 +1,109 @@
+---
+interface Props {
+  currentPage: number;
+  lastPage: number;
+}
+
+const { currentPage, lastPage } = Astro.props;
+
+const getPageUrl = (page: number): string => {
+  return page === 1 ? '/' : `/page/${page}/`;
+};
+
+const prevPage = currentPage > 1 ? currentPage - 1 : null;
+const nextPage = currentPage < lastPage ? currentPage + 1 : null;
+---
+
+<nav class="pagination" aria-label="Pagination Navigation">
+  <div class="pagination-buttons">
+    {prevPage ? (
+      <a href={getPageUrl(prevPage)} class="pagination-button pagination-prev">
+        ← Back
+      </a>
+    ) : (
+      <span class="pagination-button pagination-disabled">← Zurück</span>
+    )}
+
+    {nextPage ? (
+      <a href={getPageUrl(nextPage)} class="pagination-button pagination-next">
+        Next →
+      </a>
+    ) : (
+      <span class="pagination-button pagination-disabled">Next →</span>
+    )}
+  </div>
+
+  <div class="pagination-info">
+    <span class="pagination-current" aria-current="page">
+      Page {currentPage} of {lastPage}
+    </span>
+  </div>
+</nav>
+
+<style>
+  .pagination {
+    margin-top: var(--spacing-2xl);
+    padding-top: var(--spacing-2xl);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    align-items: center;
+  }
+
+  .pagination-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .pagination-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
+    background-color: var(--color-subtle-bg);
+    color: var(--color-text);
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color var(--transition-duration) var(--transition-timing),
+                color var(--transition-duration) var(--transition-timing);
+  }
+
+  .pagination-button:hover:not(.pagination-disabled) {
+    background-color: var(--color-border);
+    color: var(--color-accent);
+  }
+
+  .pagination-button:focus-visible:not(.pagination-disabled) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .pagination-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .pagination-info {
+    font-size: 0.95rem;
+    color: var(--color-subtle-text);
+  }
+
+  .pagination-current {
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    .pagination {
+      margin-top: var(--spacing-lg);
+      padding-top: var(--spacing-lg);
+    }
+
+    .pagination-button {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+  }
+</style>

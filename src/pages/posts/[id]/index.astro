@@ -1,0 +1,139 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Carousel from '../../../components/Carousel.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: any;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+// Format date (German locale)
+const formattedDate = post.data.datum.toLocaleDateString('de-DE', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+// Get the collection for back link
+const sammlungen = await getCollection('sammlungen');
+const sammlung = sammlungen.find((s) => s.id === post.data.sammlung);
+---
+
+<BaseLayout title={`Post | Fotoalbum`} description="Ein Beitrag aus unserem Fotoalbum">
+  <article class="post-detail">
+    <div class="container">
+      <!-- Back link -->
+      <nav class="post-nav" aria-label="Breadcrumb">
+        {sammlung && (
+          <a href={`/sammlungen/${sammlung.id}/`} class="back-link">
+            ← Collection: {sammlung.data.titel}
+          </a>
+        )}
+      </nav>
+      
+      <!-- Post header -->
+      <header class="post-header">
+        <p class="post-date">{formattedDate}</p>
+      </header>
+      
+      <!-- Carousel -->
+      <div class="post-carousel">
+        <Carousel bilder={post.data.bilder} showDots={true} />
+      </div>
+      
+      <!-- Post content -->
+      <div class="post-content">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .post-detail {
+    padding: var(--spacing-2xl) 0;
+  }
+  
+  .post-nav {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color var(--transition-duration) var(--transition-timing);
+  }
+  
+  .back-link:hover {
+    color: var(--color-accent-hover);
+  }
+  
+  .back-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+  
+  .post-header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+  }
+  
+  .post-date {
+    color: var(--color-subtle-text);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  
+  .post-carousel {
+    margin-bottom: var(--spacing-2xl);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .post-content {
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+  
+  .post-content :global(p) {
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-text);
+  }
+  
+  .post-content :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .post-content :global(.hashtag) {
+    color: var(--color-subtle-text);
+    cursor: default;
+  }
+  
+  .post-content :global(strong),
+  .post-content :global(em) {
+    font-weight: 600;
+  }
+  
+  @media (max-width: 640px) {
+    .post-detail {
+      padding: var(--spacing-lg) 0;
+    }
+  }
+</style>

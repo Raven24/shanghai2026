@@ -1,0 +1,96 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProfileHeader from '../../components/ProfileHeader.astro';
+import HighlightsRow from '../../components/HighlightsRow.astro';
+import PostCard from '../../components/PostCard.astro';
+import Pagination from '../../components/Pagination.astro';
+
+const pageSize = 12;
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('posts');
+  const sortedPosts = allPosts.sort(
+    (a, b) => b.data.datum.getTime() - a.data.datum.getTime(),
+  );
+
+  const pageSize = 12;
+  const totalPages = Math.ceil(sortedPosts.length / pageSize);
+
+  return Array.from({ length: totalPages - 1 }, (_, i) => ({
+    params: { page: String(i + 2) },
+    props: { currentPage: i + 2, totalPages, posts: sortedPosts },
+  }));
+}
+
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  posts: any[];
+}
+
+const { currentPage, totalPages, posts } = Astro.props;
+const paginatedPosts = posts.slice(
+  (currentPage - 1) * pageSize,
+  currentPage * pageSize,
+);
+
+// Get sammlungen for lookup
+const sammlungen = await getCollection('sammlungen');
+const sammlungenMap = new Map(sammlungen.map((s) => [s.id, s]));
+---
+
+<BaseLayout title={`Page ${currentPage} | Album`}>
+  <!-- Profile Header (repeated on every page for consistency) -->
+  <ProfileHeader name="Shanghai 2026" bio="digital album of my recent study trip to Shanghai" />
+
+  <!-- Highlights Row (repeated for consistency) -->
+  <HighlightsRow />
+
+  <!-- Feed -->
+  <section class="feed-section">
+    <div class="container">
+      <h2 class="feed-title">Posts</h2>
+      <div class="feed">
+        {paginatedPosts.map((post) => (
+          <PostCard
+            post={post}
+            sammlung={sammlungenMap.get(post.data.sammlung)}
+          />
+        ))}
+      </div>
+
+      <!-- Pagination -->
+      <Pagination
+        currentPage={currentPage}
+        lastPage={totalPages}
+      />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .feed-section {
+    padding: var(--spacing-2xl) 0;
+  }
+
+  .feed-title {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .feed {
+    max-width: 700px;
+  }
+
+  @media (max-width: 640px) {
+    .feed-section {
+      padding: var(--spacing-lg) 0;
+    }
+
+    .feed-title {
+      font-size: 1.25rem;
+      margin-bottom: var(--spacing-lg);
+    }
+  }
+</style>
