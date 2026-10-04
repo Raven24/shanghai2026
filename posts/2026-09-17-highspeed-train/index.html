@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="de" data-astro-cid-z4jru4n3><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Ein Beitrag aus unserem Fotoalbum"><title>Post | Fotoalbum</title><!-- Favicon --><link rel="icon" type="image/svg+xml" href="/favicon.svg"><!-- Theme script (inline to prevent FOUC) --><script>
+(function () {
+  const STORAGE_KEY = 'theme-preference';
+  const THEME_ATTR = 'data-theme';
+  const THEMES = ['light', 'dark', 'system'];
+  
+  function getTheme() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored && THEMES.includes(stored)) return stored;
+    return 'system';
+  }
+  
+  function getEffectiveTheme(preference) {
+    if (preference === 'system') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return preference;
+  }
+  
+  function applyTheme(preference) {
+    const effective = getEffectiveTheme(preference);
+    document.documentElement.setAttribute(THEME_ATTR, effective);
+    localStorage.setItem(STORAGE_KEY, preference);
+  }
+  
+  const initialTheme = getTheme();
+  applyTheme(initialTheme);
+  
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    const current = localStorage.getItem(STORAGE_KEY) || 'system';
+    if (current === 'system') {
+      applyTheme('system');
+    }
+  });
+  
+  window.themePreference = {
+    get: getTheme,
+    set: applyTheme,
+    cycle: () => {
+      const current = getTheme();
+      const next = current === 'light' ? 'dark' : current === 'dark' ? 'system' : 'light';
+      applyTheme(next);
+      return next;
+    },
+  };
+})();
+</script><!-- Preload system fonts (optional, for performance) --><link rel="preconnect" href="https://fonts.gstatic.com"><link rel="stylesheet" href="/_astro/_astro_assets.D293UyhW.css"><style>.carousel-container[data-astro-cid-oulirr76]{width:100%;position:relative}.carousel-scroll-wrapper[data-astro-cid-oulirr76]{border-radius:8px;width:100%;overflow:hidden}.carousel-scroll[data-astro-cid-oulirr76]{scroll-snap-type:x mandatory;scroll-behavior:auto;display:flex;overflow-x:auto;@media (prefers-reduced-motion:reduce){scroll-behavior:auto!important}scroll-snap-align:start}.carousel-item[data-astro-cid-oulirr76]{scroll-snap-align:start;aspect-ratio:4/5;flex:0 0 100%;overflow:hidden}.carousel-item[data-astro-cid-oulirr76] img{object-fit:cover;width:100%;height:100%;display:block}.carousel-single[data-astro-cid-oulirr76]{aspect-ratio:4/5;border-radius:8px;width:100%;overflow:hidden}.carousel-single[data-astro-cid-oulirr76] img{object-fit:cover;width:100%;height:100%;display:block}.carousel-dots[data-astro-cid-oulirr76]{justify-content:center;gap:8px;margin-top:12px;padding:12px 0;display:flex}.carousel-dot[data-astro-cid-oulirr76]{background-color:var(--color-border);cursor:pointer;width:8px;height:8px;transition:background-color var(--transition-duration) var(--transition-timing);border:none;border-radius:50%;padding:0}.carousel-dot[data-astro-cid-oulirr76]:hover{background-color:var(--color-subtle-text)}.carousel-dot[data-astro-cid-oulirr76].active{background-color:var(--color-text)}.carousel-dot[data-astro-cid-oulirr76]:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px}.post-detail[data-astro-cid-k5moxd3w]{padding:var(--spacing-2xl) 0}.post-nav[data-astro-cid-k5moxd3w]{margin-bottom:var(--spacing-lg)}.back-link[data-astro-cid-k5moxd3w]{color:var(--color-accent);transition:color var(--transition-duration) var(--transition-timing);align-items:center;font-size:.95rem;text-decoration:none;display:inline-flex}.back-link[data-astro-cid-k5moxd3w]:hover{color:var(--color-accent-hover)}.back-link[data-astro-cid-k5moxd3w]:focus-visible{outline:2px solid var(--color-accent);outline-offset:4px}.post-header[data-astro-cid-k5moxd3w]{text-align:center;margin-bottom:var(--spacing-2xl)}.post-date[data-astro-cid-k5moxd3w]{color:var(--color-subtle-text);font-size:.95rem;font-weight:500}.post-carousel[data-astro-cid-k5moxd3w]{margin-bottom:var(--spacing-2xl);max-width:600px;margin-left:auto;margin-right:auto}.post-content[data-astro-cid-k5moxd3w]{max-width:600px;margin:0 auto;line-height:1.8}.post-content[data-astro-cid-k5moxd3w] p{margin-bottom:var(--spacing-lg);color:var(--color-text)}.post-content[data-astro-cid-k5moxd3w] a{color:var(--color-accent);text-decoration:underline}.post-content[data-astro-cid-k5moxd3w] .hashtag{color:var(--color-subtle-text);cursor:default}.post-content[data-astro-cid-k5moxd3w] strong,.post-content[data-astro-cid-k5moxd3w] em{font-weight:600}@media (width<=640px){.post-detail[data-astro-cid-k5moxd3w]{padding:var(--spacing-lg) 0}}
+</style></head><body data-astro-cid-z4jru4n3><!-- Skip to main content link --><a href="#main" class="skip-to-main" data-astro-cid-z4jru4n3>Zum Hauptinhalt springen</a><!-- Header with theme toggle --><header class="site-header" data-astro-cid-z4jru4n3><div class="container" data-astro-cid-z4jru4n3><div class="header-content" data-astro-cid-z4jru4n3><nav class="header-nav" aria-label="Main navigation" data-astro-cid-z4jru4n3><a href="/" class="site-logo" data-astro-cid-z4jru4n3>Home</a></nav><div class="theme-toggle-wrapper" data-astro-cid-l6lhmie6><button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme (Light, Dark, System)" title="Toggle theme" data-astro-cid-l6lhmie6><span class="theme-icon sun-icon" data-astro-cid-l6lhmie6><span class="icon icon-sun" style="width: 20px; height: 20px;; --size: 20px;" data-astro-cid-ccg5yoga><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="5"/>
+    <line x1="12" y1="1" x2="12" y2="3"/>
+    <line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1" y1="12" x2="3" y2="12"/>
+    <line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </svg></span></span><span class="theme-icon moon-icon" style="display: none;" data-astro-cid-l6lhmie6><span class="icon icon-moon" style="width: 20px; height: 20px;; --size: 20px;" data-astro-cid-ccg5yoga><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+  </svg></span></span></button></div><script type="module">var e=document.getElementById(`theme-toggle`),t=document.querySelector(`.sun-icon`),n=document.querySelector(`.moon-icon`);function r(){let e=window.themePreference?.get?.();(e===`system`?window.matchMedia(`(prefers-color-scheme: dark)`).matches?`dark`:`light`:e)===`dark`?(t&&(t.style.display=`none`),n&&(n.style.display=`flex`)):(t&&(t.style.display=`flex`),n&&(n.style.display=`none`))}e&&(e.addEventListener(`click`,()=>{window.themePreference?.cycle?.(),r()}),r(),window.matchMedia(`(prefers-color-scheme: dark)`).addEventListener(`change`,r));</script></div></div></header><!-- Main content --><main id="main" role="main" data-astro-cid-z4jru4n3><article class="post-detail" data-astro-cid-k5moxd3w><div class="container" data-astro-cid-k5moxd3w><!-- Back link --><nav class="post-nav" aria-label="Breadcrumb" data-astro-cid-k5moxd3w><a href="/sammlungen/unforgettable-moments/" class="back-link" data-astro-cid-k5moxd3w>← Collection: Unforgettable moments</a></nav><!-- Post header --><header class="post-header" data-astro-cid-k5moxd3w><p class="post-date" data-astro-cid-k5moxd3w>17. September 2026</p></header><!-- Carousel --><div class="post-carousel" data-astro-cid-k5moxd3w><div class="carousel-container" data-astro-cid-oulirr76><div class="carousel-scroll-wrapper" data-astro-cid-oulirr76><div class="carousel-scroll" data-astro-cid-oulirr76><div class="carousel-item" data-astro-cid-oulirr76><picture data-astro-cid-oulirr76="true"><source srcset="/_astro/IMG_20260917_100813285_HDR~2.B14Zn56u_2vJye1.avif 480w, /_astro/IMG_20260917_100813285_HDR~2.B14Zn56u_2stc4X.avif 768w, /_astro/IMG_20260917_100813285_HDR~2.B14Zn56u_Z1w9OFV.avif 1080w" type="image/avif" sizes="(min-width: 640px) 600px, 100vw"><source srcset="/_astro/IMG_20260917_100813285_HDR~2.B14Zn56u_ZPmJKD.webp 480w, /_astro/IMG_20260917_100813285_HDR~2.B14Zn56u_ZSD6TG.webp 768w, /_astro/IMG_20260917_100813285_HDR~2.B14Zn56u_11ixFm.webp 1080w" type="image/webp" sizes="(min-width: 640px) 600px, 100vw"><img src="/_astro/IMG_20260917_100813285_HDR~2.B14Zn56u_Z4YGpR.jpg" srcset="/_astro/IMG_20260917_100813285_HDR~2.B14Zn56u_ZqCyBn.jpg 480w, /_astro/IMG_20260917_100813285_HDR~2.B14Zn56u_ZtSUKq.jpg 768w, /_astro/IMG_20260917_100813285_HDR~2.B14Zn56u_Z1Ekd4j.jpg 1080w" alt="highspeed train" sizes="(min-width: 640px) 600px, 100vw" loading="eager" fetchpriority="high" data-astro-cid-oulirr76="true" decoding="async" width="4591" height="2838"></picture></div><div class="carousel-item" data-astro-cid-oulirr76><picture data-astro-cid-oulirr76="true"><source srcset="/_astro/IMG_20260917_165823046_HDR~2.DgQ_zam8_ZVpftv.avif 480w, /_astro/IMG_20260917_165823046_HDR~2.DgQ_zam8_1Tv5Xj.avif 768w, /_astro/IMG_20260917_165823046_HDR~2.DgQ_zam8_1aVwrK.avif 1080w" type="image/avif" sizes="(min-width: 640px) 600px, 100vw"><source srcset="/_astro/IMG_20260917_165823046_HDR~2.DgQ_zam8_LEzkL.webp 480w, /_astro/IMG_20260917_165823046_HDR~2.DgQ_zam8_Z1rBd1l.webp 768w, /_astro/IMG_20260917_165823046_HDR~2.DgQ_zam8_Z1lMdYS.webp 1080w" type="image/webp" sizes="(min-width: 640px) 600px, 100vw"><img src="/_astro/IMG_20260917_165823046_HDR~2.DgQ_zam8_q0PXP.jpg" srcset="/_astro/IMG_20260917_165823046_HDR~2.DgQ_zam8_1boKu2.jpg 480w, /_astro/IMG_20260917_165823046_HDR~2.DgQ_zam8_Z12R1R5.jpg 768w, /_astro/IMG_20260917_165823046_HDR~2.DgQ_zam8_12L94n.jpg 1080w" alt="railway station" sizes="(min-width: 640px) 600px, 100vw" loading="lazy" fetchpriority="auto" data-astro-cid-oulirr76="true" decoding="async" width="2313" height="1377"></picture></div></div></div><div class="carousel-dots" role="tablist" aria-label="Bildnavigation" data-astro-cid-oulirr76><button class="carousel-dot active" role="tab" aria-selected="true" aria-label="Bild 1 von 2" data-index="0" data-astro-cid-oulirr76></button><button class="carousel-dot " role="tab" aria-selected="false" aria-label="Bild 2 von 2" data-index="1" data-astro-cid-oulirr76></button></div></div><script type="module">var e=document.querySelector(`.carousel-scroll`),t=document.querySelectorAll(`.carousel-dot`);if(e&&t.length>0){function n(){let n=e.scrollLeft,r=e.firstElementChild?.clientWidth??e.clientWidth,i=Math.round(n/r);t.forEach((e,t)=>{let n=t===i;e.classList.toggle(`active`,n),e.setAttribute(`aria-selected`,n?`true`:`false`)})}e.addEventListener(`scroll`,n,{passive:!0}),e.addEventListener(`keydown`,t=>{t.key===`ArrowRight`?(t.preventDefault(),e.scrollBy({left:e.clientWidth,behavior:`smooth`})):t.key===`ArrowLeft`&&(t.preventDefault(),e.scrollBy({left:-e.clientWidth,behavior:`smooth`}))}),t.forEach(t=>{t.addEventListener(`click`,()=>{let n=parseInt(t.dataset.index??`0`,10),r=e.firstElementChild?.clientWidth??e.clientWidth;e.scrollTo({left:n*r,behavior:`smooth`})})})}</script></div><!-- Post content --><div class="post-content" data-astro-cid-k5moxd3w><p><strong>High speed trains</strong> - going across China at 300km/h</p>
+<p>An incredible experience, similar to checking in to an airport, separate levels for boarding and disembarking.<br>
+With impeccable punctuality and a smooth ride, a trip by train will leave a lasting impression.</p>
+<p><span class="hashtag">#chinarailway</span> <span class="hashtag">#highspeed</span> <span class="hashtag">#train</span></p></div></div></article></main><!-- Footer --><footer class="site-footer" data-astro-cid-z4jru4n3><div class="container" data-astro-cid-z4jru4n3><p data-astro-cid-z4jru4n3>&copy; 2026</p><p data-astro-cid-z4jru4n3><a href="/rss.xml" data-astro-cid-z4jru4n3>RSS</a></p></div></footer></body></html>

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "datum": {
+      "default": "2026-10-04T16:59:31.867Z",
+      "type": "string",
+      "format": "date-time"
+    },
+    "sammlung": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bilder": {
+      "minItems": 1,
+      "maxItems": 5,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "datei": {
+            "type": "string"
+          },
+          "alt": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "datei",
+          "alt"
+        ]
+      }
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "sammlung",
+    "bilder"
+  ]
+}
