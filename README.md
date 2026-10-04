@@ -158,6 +158,27 @@ Mehr Details: `.docker-compose.md`
 
 Diese Seite ist vollständig statisch und kann auf jedem Web-Host gehostet werden.
 
+### GitHub Pages (schnell & kostenlos)
+
+Die Seite ist auf GitHub Pages unter `https://shanghai2026.flstd.xyz/` deploybar.
+
+**Setup (einmalig):**
+- Repository: https://github.com/Raven24/shanghai2026
+- Pages aktiviert: Branch `gh-pages`, Custom Domain `shanghai2026.flstd.xyz`
+- `.nojekyll` + `CNAME` in `public/` vorhanden (blockiert Jekyll-Verarbeitung)
+
+**Deployment:**
+```bash
+npm run deploy
+```
+
+Das Skript baut die Seite und pusht den Output in den `gh-pages`-Branch. Nach ~1 Minute ist die Seite live unter `https://shanghai2026.flstd.xyz/`.
+
+**Was passiert dabei:**
+1. `astro build` → erzeugt `dist/`
+2. `gh-pages -d dist --dotfiles` → pusht `dist/` + versteckte Dateien (`.nojekyll`) in `gh-pages`-Branch
+3. GitHub Pages deployt automatisch
+
 ### Nginx (empfohlen)
 
 ```nginx
